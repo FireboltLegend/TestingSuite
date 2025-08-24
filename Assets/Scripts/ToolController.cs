@@ -63,13 +63,12 @@ public class ToolController : MonoBehaviour
                 {
                     using (StreamWriter sw = new StreamWriter(excelFullPath, true))
                     {
-                        string dataLine = string.Format("{0},{1},{2},{3},{4},{5}",
+                        string dataLine = string.Format("{0},{1},{2},{3},{4}",
                             "Participant Number",
                             "Trial Number",
                             "Wet",
                             "Temp",
-                            "Q1",
-                            "Q2"
+                            "Q1"
                         );
                         sw.WriteLine(dataLine);
                     }
@@ -163,13 +162,12 @@ public class ToolController : MonoBehaviour
         {
             using (StreamWriter sw = new StreamWriter(excelFullPath, true))
             {
-                string dataLine = string.Format("{0},{1},{2},{3},{4},{5}",
+                string dataLine = string.Format("{0},{1},{2},{3},{4}",
                     "P" + participantNumber,
                     trialNumber,
                     wetCondition,
                     peltierCondition,
-                    trialResponse.responses[0],
-                    trialResponse.responses[1]
+                    trialResponse.responses[0]
                 );
                 sw.WriteLine(dataLine);
             }
