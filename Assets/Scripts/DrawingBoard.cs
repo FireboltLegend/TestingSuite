@@ -7,6 +7,7 @@ public class DrawingBoard : MonoBehaviour
 {
     public RawImage drawingSurface;
     public Color drawColor = Color.red;
+    public string wetCondition = "";
     public int brushSize = 5;
 
     private Texture2D texture;
@@ -34,6 +35,19 @@ public class DrawingBoard : MonoBehaviour
 
     void Update()
     {
+        if (wetCondition == "Hot_Wet")
+        {
+            drawColor = Color.red;
+        }
+        else if (wetCondition == "Cold_Wet")
+        {
+            drawColor = Color.blue;
+        }
+        else
+        {
+            drawColor = Color.green;
+        }
+
         if (Input.GetMouseButton(0))
         {
             Vector2 localPoint;
@@ -182,8 +196,9 @@ public class DrawingBoard : MonoBehaviour
     public void SaveDrawing()
     {
         byte[] bytes = texture.EncodeToPNG();
-        string folderPath = Path.Combine(toolController.drawingSavePath, "p" + toolController.participantNumber.ToString());
-        string path = Path.Combine(folderPath, string.Format("p{0}_trial{1}_drawing.png", toolController.participantNumber, toolController.trialNumber));
+        string timeNow = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string folderPath = Path.Combine(Application.persistentDataPath, "p" + toolController.participantNumber.ToString() + "_" + toolController.pathTime);
+        string path = Path.Combine(folderPath, string.Format("{0}_{1}.png", toolController.saveString, timeNow));
         if (!Directory.Exists(folderPath))
         {
             Directory.CreateDirectory(folderPath);

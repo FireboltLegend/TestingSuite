@@ -30,6 +30,13 @@ public class CommunicationController : MonoBehaviour
     [Header("References")]
     public SuiteController suiteController;
     public Image piConnectButton;
+    public ToolController toolController;
+    public DrawingBoard drawingBoard;
+    public RawImage markerImage;
+    public Texture2D redMarker;
+    public Texture2D blueMarker;
+    public Texture2D greenMarker;
+    public string wetCondition = "";
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -41,7 +48,18 @@ public class CommunicationController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (wetCondition == "Hot_Wet")
+        {
+            markerImage.texture = redMarker;
+        }
+        else if (wetCondition == "Cold_Wet")
+        {
+            markerImage.texture = blueMarker;
+        }
+        else
+        {
+            markerImage.texture = greenMarker;
+        }
     }
 
     public void ConnectToPi()
@@ -154,7 +172,21 @@ public class CommunicationController : MonoBehaviour
             messageFromTool = messageFromTool[..^1];
             Debug.Log("Received message from Tool: " + messageFromTool);
 
-            suiteController.HandleMessageFromTool(messageFromTool);
+            // Remove the first character from the message
+            string id = messageFromTool.Substring(1);
+            // Example of received string: "$P1 02 Hot_Wet Cold"
+            // Parse the message to extract participant number, trial number, wet condition, and peltier condition by separating by spaces
+            string[] parts = id.Split(' ');
+
+            toolController.participantNumber = int.Parse(parts[0].Substring(1));
+            toolController.trialNumber = int.Parse(parts[1]);
+            wetCondition = parts[2];
+            toolController.wetCondition = wetCondition;
+            toolController.peltierCondition = parts[3];
+            toolController.saveString = id;
+            drawingBoard.wetCondition = wetCondition;
+            toolController.starting = true;
+            // suiteController.HandleMessageFromTool(messageFromTool);
         }
     }
 

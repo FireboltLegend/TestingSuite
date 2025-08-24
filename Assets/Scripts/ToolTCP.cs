@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class ToolTCP : MonoBehaviour
 {
-    public string suiteIP = "172.16.136.202";  // Replace with the Raspberry Pi's IP address
+    public string suiteIP = "172.16.136.164";  // Replace with the Raspberry Pi's IP address
     public int port = 25568;             // Replace with the port number used on the Raspberry Pi
 
     public TcpClient client;

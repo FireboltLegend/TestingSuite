@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using System;
 
 public class ToolController : MonoBehaviour
 {
@@ -16,17 +18,28 @@ public class ToolController : MonoBehaviour
 
     public int participantNumber;
     public int trialNumber;
+    public string saveString;
+    public string wetCondition = "";
+    public string peltierCondition = "";
+    public string excelFilePath = "";
+    public string excelFileName = "";
+    public string excelFullPath = "";
+    public string pathTime = "";
     public float waitTime;
     public float restTime;
 
     public bool skipThermalOnNeutral;
     public bool testing = false;
     public bool starting = false;
+    private DateTime startTime;
+    private bool experimentStarted = false;
 
     // Start is called before the first frame update
     void Start()
     {
         skipThermalOnNeutral = false;
+        startTime = DateTime.Now;
+        pathTime = startTime.ToString("yyyy-MM-dd_HH-mm-ss");
     }
 
     // Update is called once per frame
@@ -39,6 +52,33 @@ public class ToolController : MonoBehaviour
         if (starting)
         {
             starting = false;
+            if (experimentStarted == false)
+            {
+                experimentStarted = true;
+                Debug.Log("Experiment started for participant " + participantNumber);
+                excelFilePath = Application.persistentDataPath;
+                excelFileName = "P" + participantNumber + "_" + pathTime + ".csv";
+                excelFullPath = Path.Combine(excelFilePath, excelFileName);
+                try
+                {
+                    using (StreamWriter sw = new StreamWriter(excelFullPath, true))
+                    {
+                        string dataLine = string.Format("{0},{1},{2},{3},{4},{5}",
+                            "Participant Number",
+                            "Trial Number",
+                            "Wet",
+                            "Temp",
+                            "Q1",
+                            "Q2"
+                        );
+                        sw.WriteLine(dataLine);
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError("Failed to write to CSV file: " + e.Message);
+                }
+            }
             StartTrial();
         }
     }
@@ -119,12 +159,31 @@ public class ToolController : MonoBehaviour
         {
             responseScreen.SetActive(false);
         }
+        try
+        {
+            using (StreamWriter sw = new StreamWriter(excelFullPath, true))
+            {
+                string dataLine = string.Format("{0},{1},{2},{3},{4},{5}",
+                    "P" + participantNumber,
+                    trialNumber,
+                    wetCondition,
+                    peltierCondition,
+                    trialResponse.responses[0],
+                    trialResponse.responses[1]
+                );
+                sw.WriteLine(dataLine);
+            }
+        }
+        catch(System.Exception e)
+        {
+            Debug.LogError("Failed to write to CSV file: " + e.Message);
+        }
         StartCoroutine(EndTrialHelper());
     }
 
     private IEnumerator EndTrialHelper()
     {
-        toolTCP.SendMessageToSuite(string.Format("response," + trialResponse.ToListString()));
+        // toolTCP.SendMessageToSuite(string.Format("response," + trialResponse.ToListString()));
         midTrialScreen.SetActive(true);
         yield return new WaitForSeconds(restTime);
         midTrialScreen.SetActive(false);
@@ -171,8 +230,8 @@ public class ToolController : MonoBehaviour
     {
         nextTrialScreen.SetActive(false);
         idleScreen.SetActive(true);
-        string message = "nexttrial";
-        toolTCP.SendMessageToSuite(message);
+        // string message = "nexttrial";
+        // toolTCP.SendMessageToSuite(message);
     }
 
     public class TrialResponse
