@@ -31,11 +31,6 @@ public class CommunicationController : MonoBehaviour
     public SuiteController suiteController;
     public Image piConnectButton;
     public ToolController toolController;
-    public DrawingBoard drawingBoard;
-    public RawImage markerImage;
-    public Texture2D redMarker;
-    public Texture2D blueMarker;
-    public Texture2D greenMarker;
     public string wetCondition = "";
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -48,18 +43,7 @@ public class CommunicationController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (wetCondition == "Hot_Wet")
-        {
-            markerImage.texture = redMarker;
-        }
-        else if (wetCondition == "Cold_Wet")
-        {
-            markerImage.texture = blueMarker;
-        }
-        else
-        {
-            markerImage.texture = greenMarker;
-        }
+
     }
 
     public void ConnectToPi()
@@ -182,9 +166,9 @@ public class CommunicationController : MonoBehaviour
             toolController.trialNumber = int.Parse(parts[1]);
             wetCondition = parts[2];
             toolController.wetCondition = wetCondition;
-            toolController.peltierCondition = parts[3];
+            toolController.wetLocation = parts[3];
+            toolController.peltierLocation = parts[4];
             toolController.saveString = id;
-            drawingBoard.wetCondition = wetCondition;
             toolController.starting = true;
             // suiteController.HandleMessageFromTool(messageFromTool);
         }

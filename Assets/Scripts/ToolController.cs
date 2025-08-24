@@ -20,7 +20,8 @@ public class ToolController : MonoBehaviour
     public int trialNumber;
     public string saveString;
     public string wetCondition = "";
-    public string peltierCondition = "";
+    public string wetLocation = "";
+    public string peltierLocation = "";
     public string excelFilePath = "";
     public string excelFileName = "";
     public string excelFullPath = "";
@@ -33,6 +34,24 @@ public class ToolController : MonoBehaviour
     public bool starting = false;
     private DateTime startTime;
     private bool experimentStarted = false;
+    public GameObject visualCue;
+    private Dictionary<string, Vector3> locationMapper = new Dictionary<string, Vector3>()
+    {
+        {"Index2", new Vector3(-4.6f,37.1f,0)},
+        {"Index1", new Vector3(-2.2f,12.61f,0)},
+        {"Middle2", new Vector3(12.2f,41.8f,0)},
+        {"Middle1", new Vector3(11.6f,15.34f,0)},
+        {"Ring2", new Vector3(27.2f,35.3f,0)},
+        {"Ring1", new Vector3(22.96f,10.7f,0)},
+        {"Pinky2", new Vector3(44f,18.5f,0)},
+        {"Pinky1", new Vector3(34.88f,0.6f,0)},
+        {"Thumb2", new Vector3(-35.84f,-20.1f,0)},
+        {"Thumb1", new Vector3(-21.9f,-28.3f,0)},
+        {"Palm1", new Vector3(2.8f,-6.8f,0)},
+        {"Palm2", new Vector3(22.9f,-6.8f,0)},
+        {"Palm3", new Vector3(2.8f,-26.2f,0)},
+        {"Palm4", new Vector3(22.9f,-26.2f,0)}
+    };
 
     // Start is called before the first frame update
     void Start()
@@ -52,6 +71,7 @@ public class ToolController : MonoBehaviour
         if (starting)
         {
             starting = false;
+            visualCue.transform.localPosition = locationMapper[peltierLocation];
             if (experimentStarted == false)
             {
                 experimentStarted = true;
@@ -63,11 +83,12 @@ public class ToolController : MonoBehaviour
                 {
                     using (StreamWriter sw = new StreamWriter(excelFullPath, true))
                     {
-                        string dataLine = string.Format("{0},{1},{2},{3},{4}",
+                        string dataLine = string.Format("{0},{1},{2},{3},{4},{5}",
                             "Participant Number",
                             "Trial Number",
                             "Wet",
-                            "Temp",
+                            "Wet Location",
+                            "Peltier Location",
                             "Q1"
                         );
                         sw.WriteLine(dataLine);
@@ -162,11 +183,12 @@ public class ToolController : MonoBehaviour
         {
             using (StreamWriter sw = new StreamWriter(excelFullPath, true))
             {
-                string dataLine = string.Format("{0},{1},{2},{3},{4}",
+                string dataLine = string.Format("{0},{1},{2},{3},{4},{5}",
                     "P" + participantNumber,
                     trialNumber,
                     wetCondition,
-                    peltierCondition,
+                    wetLocation,
+                    peltierLocation,
                     trialResponse.responses[0]
                 );
                 sw.WriteLine(dataLine);
